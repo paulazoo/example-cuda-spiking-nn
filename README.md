@@ -1,9 +1,9 @@
 # Docs
-Conductance-based exponential integrate-and-fire (EIF) neurons in excitatory and inhibitory populations, distance-dependent random connectivity, and spike-timing-dependent plasticity (triplet STDP on E→E synapses, inhibitory STDP on I→E synapses). All simulation state lives on the GPU; the host builds the network, launches kernels, and writes recordings to disk. The example configs run 3,125 neurons (2,500 E + 625 I) with four dense weight matrices (~9.8M synapse entries) at a 0.1 ms timestep
+Conductance-based exponential integrate-and-fire (EIF) neurons in excitatory and inhibitory populations, distance-dependent random connectivity, and spike-timing-dependent plasticity (triplet STDP on E→E synapses, inhibitory STDP on I→E synapses). The example config run 3,125 neurons (2,500 E + 625 I) with four dense weight matrices (~9.8M synapse entries) at a 0.1 ms timestep
 
 ![](./resources/spikes_locations_smoothed_gif.gif)
 
--  `GpuSimulationState` allocates every device buffer up front as structure-of-arrays (one array per state variable across all neurons), owns the cuBLAS handle and the cuRAND states, is non-copyable, and frees everything in the destructor
+- All simulation state lives on GPU; the CPU host builds the network, launches kernels, and writes recordings to disk. `GpuSimulationState` allocates every device buffer up front as structure-of-arrays (one array per state variable across all neurons), owns the cuBLAS handle and the cuRAND states, is non-copyable, and frees everything in the destructor
 ![](./resources/gpu_simulation_state_page0.jpg)
 ![](./resources/gpu_simulation_state_page1.jpg)
 
