@@ -1,0 +1,15 @@
+.vscode/
+.DS_Store
+__pycache__/
+# Build stuff
+build/
+# Compiled stuff
+bin/
+
+# Environments
+*_env/
+.venv/
+venv/
+
+# Data folder
+data
