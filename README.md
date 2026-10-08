@@ -1,8 +1,51 @@
 # Docs
-- environment requirements:
-  - python 3.11.6
-  - pip install numpy ipykernel matplotlib opencv-python
+Conductance-based exponential integrate-and-fire (EIF) neurons in excitatory and inhibitory populations, distance-dependent random connectivity, and spike-timing-dependent plasticity (triplet STDP on E→E synapses, inhibitory STDP on I→E synapses). All simulation state lives on the GPU; the host builds the network, launches kernels, and writes recordings to disk. The example configs run 3,125 neurons (2,500 E + 625 I) with four dense weight matrices (~9.8M synapse entries) at a 0.1 ms timestep
 
+![](./resources/spikes_locations_smoothed_gif.gif)
+
+-  `GpuSimulationState` allocates every device buffer up front as structure-of-arrays (one array per state variable across all neurons), owns the cuBLAS handle and the cuRAND states, is non-copyable, and frees everything in the destructor
+![](./resources/gpu_simulation_state_page0.jpg)
+![](./resources/gpu_simulation_state_page1.jpg)
+
+- Each component (`NeuronGroup`, `Connection`, `Stimulus`, `Plasticity`, monitors) builds a small POD `*View` struct of parameters and device pointers into the shared buffers, and passes it to its kernels by value e.g. a neuron group is just an `offset` + `num_neurons` slice.
+- `System` owns every component through `std::unique_ptr` and calls them in a fixed order each step, so adding a learning rule or a recorder doesn't touch the step loop
+- Monitors write each step's spikes and voltages into a device-side ring buffer and copy it to the host once per `recording_interval_steps` (10,000 steps = 1 s simulated)
+
+
+# Reqs
+- __Simulation__:
+  - Linux with NVIDIA GPU. Makefile  uses `-arch=sm_89` (RTX 40-series) right now
+  - CUDA Toolkit 11.8+ (cuBLAS, cuRAND)
+  - C++17 and OpenMP
+- __Analysis notebooks__: python 3.11.6 and `pip install numpy ipykernel matplotlib opencv-python`.
+
+### Build and run
+```bash
+make                                            # builds bin/main_buryn
+mkdir -p ../data/buryn_data                     # output root used by the example configs (outside the repo)
+
+./bin/main_buryn configs_to_run/config00.json   # run one config
+bash bash_src/run_simulations.sh                # run every config in configs_to_run/
+```
+- Run from repo root; the paths in the configs are relative to that
+- At startup the binary should print the total GPU memory it allocated. During the run it prints `Completed clock step: <step> | elapsed: <seconds>s`
+- Each run deletes and recreates its `output_directory` then copies its config into it
+
+### Configuration
+Each run is one JSON file. Defaults in `cpp_src/core/config.h`.
+
+| Group | Keys | Notes |
+|---|---|---|
+| Run | `simulation_steps`, `timestep`, `rng_seed`, `output_directory`, `description` | `timestep` in seconds (`1e-4` = 0.1 ms) |
+| Neurons | `num_excitatory_neurons`, `num_inhibitory_neurons`, `g_leak`, `membrane_capacitance`, `v_*`, `refractory_steps` | SI units (S, F, V) |
+| Layout | `excitatory_side_points`, `inhibitory_side_points`, `*_location_spacing` | neurons sit on square 2D grids |
+| Connectivity | `{e_to_e,e_to_i,i_to_e,i_to_i}_max_weight_value`, `_max_distance`, `_spread_scale`, `_probability_multiplier`, ... | Gaussian connection probability by distance |
+| Synapses | `tau_rise_e`, `tau_decay_e`, `tau_rise_i`, `tau_decay_i` | difference-of-exponentials conductance |
+| Plasticity | `e_e_plasticity_*` (triplet STDP), `i_e_plasticity_*` (iSTDP) | toggle each with `*_enabled` |
+| Stimulus | `stimulus_selected_input_ids`, `stimulus_start_clock_steps`, `stimulus_end_clock_steps`, `stimulus_input_values` | square current pulses; a single value is reused for every pulse |
+| Recording | `*_recording_file`, `voltage_recording_neuron_ids` | |
+
+`simulation_steps` is a multiple of 10,000 plus one (e.g. `10001`) so that the last 1 s recording window is written out.
 
 # System
 ![](./resources/system_page0.jpg)
@@ -51,10 +94,6 @@ Using $P_K^\lambda({i,j}) \sim C\exp(\frac{-d_{ij}^2}{S})=N(0, \sqrt{0.5S})$
 # Plasticities
 ![](./resources/plasticities_page0.jpg)
 ![](./resources/plasticities_page1.jpg)
-
-# Gpu Simulation State
-![](./resources/gpu_simulation_state_page0.jpg)
-![](./resources/gpu_simulation_state_page1.jpg)
 
 
 # References

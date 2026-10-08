@@ -1,15 +1,15 @@
 {
-  "simulation_steps": 100001,
+  "simulation_steps": 1000001,
   "output_directory": "../data/buryn_data/buryn_outputs_01",
-  "description": "near_criticality01",
-  "rng_seed": 926,
+  "description": "no_plasticity_01",
+  "rng_seed": 751,
   "timestep": 1e-4,
   
   "num_excitatory_neurons": 2500,
   "num_inhibitory_neurons": 625,
 
   "g_leak": 0.05e-6,
-  "membrane_capacitance": 1.0e-9,
+  "membrane_capacitance": 100.0e-12,
   "depolarization_slope_factor": 0.0065625,
   "v_effective_spike_threshold": -0.060625,
   "v_excitatory_reversal": 0.0,
@@ -19,15 +19,22 @@
   "v_rest": -0.07,
   "refractory_steps": 50,
 
-  "background_excitatory_synaptic_conductance_mean_e": 1.0e-9,
-  "background_excitatory_synaptic_conductance_std_e": 1.0e-9,
-  "background_inhibitory_synaptic_conductance_mean_e": 1.0e-10,
-  "background_inhibitory_synaptic_conductance_std_e": 1.0e-11,
-
-  "background_excitatory_synaptic_conductance_mean_i": 1.0e-10,
-  "background_excitatory_synaptic_conductance_std_i": 1.0e-11,
-  "background_inhibitory_synaptic_conductance_mean_i": 1.0e-11,
-  "background_inhibitory_synaptic_conductance_std_i": 1.0e-12,
+  "group_e_mean_background_excitatory_spikes": 0.02,
+  "group_e_mean_background_inhibitory_spikes": 1.5,
+  "group_e_background_excitatory_postsynaptic_r_trace_decay": 0.71653,
+  "group_e_background_excitatory_postsynaptic_d_trace_decay": 0.95122,
+  "group_e_background_inhibitory_postsynaptic_r_trace_decay": 0.71653,
+  "group_e_background_inhibitory_postsynaptic_d_trace_decay": 0.96722,
+  "group_e_background_excitatory_scaling_factor": 2.5e-9,
+  "group_e_background_inhibitory_scaling_factor": 2.5e-12,
+  "group_i_mean_background_excitatory_spikes": 0.02,
+  "group_i_mean_background_inhibitory_spikes": 1.5,
+  "group_i_background_excitatory_postsynaptic_r_trace_decay": 0.71653,
+  "group_i_background_excitatory_postsynaptic_d_trace_decay": 0.95122,
+  "group_i_background_inhibitory_postsynaptic_r_trace_decay": 0.71653,
+  "group_i_background_inhibitory_postsynaptic_d_trace_decay": 0.96722,
+  "group_i_background_excitatory_scaling_factor": 2.5e-9,
+  "group_i_background_inhibitory_scaling_factor": 2.5e-12,
 
   "excitatory_locations_file": "locations/group_e_locations.txt",
   "inhibitory_locations_file": "locations/group_i_locations.txt",
@@ -37,7 +44,7 @@
   "inhibitory_side_points": 25,
   "side_length": 50.0,
 
-  "e_to_e_max_weight_value": 0.25e-9,
+  "e_to_e_max_weight_value": 1.5e-9,
   "e_to_e_max_distance": 45.0,
   "e_to_e_spread_scale": 81.0,
   "e_to_e_weight_value_normal_dropoff": false,
@@ -47,7 +54,7 @@
   "e_to_e_x_location_length": 50.0,
   "e_to_e_y_location_length": 50.0,
 
-  "e_to_i_max_weight_value": 0.25e-9,
+  "e_to_i_max_weight_value": 1.5e-9,
   "e_to_i_max_distance": 45.0,
   "e_to_i_spread_scale": 81.0,
   "e_to_i_weight_value_normal_dropoff": false,
@@ -57,7 +64,7 @@
   "e_to_i_x_location_length": 50.0,
   "e_to_i_y_location_length": 50.0,
 
-  "i_to_e_max_weight_value": 0.07e-9,
+  "i_to_e_max_weight_value": 5.0e-9,
   "i_to_e_max_distance": 45.0,
   "i_to_e_spread_scale": 324.0,
   "i_to_e_weight_value_normal_dropoff": false,
@@ -67,7 +74,7 @@
   "i_to_e_x_location_length": 50.0,
   "i_to_e_y_location_length": 50.0,
 
-  "i_to_i_max_weight_value": 0.07e-9,
+  "i_to_i_max_weight_value": 5.0e-9,
   "i_to_i_max_distance": 45.0,
   "i_to_i_spread_scale": 324.0,
   "i_to_i_weight_value_normal_dropoff": false,
@@ -85,9 +92,9 @@
   "tau_rise_e": 0.0003,
   "tau_decay_i": 0.003,
   "tau_rise_i": 0.0003,
-  "postsynaptic_kernel_normalization_value": 1.0,
+  "postsynaptic_kernel_normalization_value": 1.7,
   
-  "e_e_plasticity_enabled": true,
+  "e_e_plasticity_enabled": false,
   "e_e_plasticity_ltp_A": 7.5e-22,
   "e_e_plasticity_ltd_A": 7.0e-15,
   "e_e_plasticity_ltp_B": 9.4e-15,
@@ -99,7 +106,7 @@
   "e_e_plasticity_weight_min": 0.0,
   "e_e_plasticity_weight_max": 3.0e-9,
 
-  "i_e_plasticity_enabled": true,
+  "i_e_plasticity_enabled": false,
   "i_e_plasticity_ltp_A": 1.0e-12,
   "i_e_plasticity_ltd_A": 1.0e-12,
   "i_e_plasticity_ltd_B": 1.2e-3,
@@ -108,19 +115,25 @@
   "i_e_plasticity_weight_min": 0.0,
   "i_e_plasticity_weight_max": 3.0e-9,
 
-  "stimulus_input_values": [5.0e-9],
+  "stimulus_input_values": [1.0e-9],
   "stimulus_schedules_folder": "stimulus_schedules",
   "stimulus_selected_input_ids": [1029, 1070, 1071, 1124, 1228, 1274, 1324, 1328, 1373, 1429],
   "stimulus_start_clock_steps": [
-    5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500,
-    10000, 10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000, 14500],
+    273621, 274121, 274621, 275121, 275621, 276121, 276621, 277121, 277621, 278121,
+    278621, 279121, 279621, 280121, 280621, 281121, 281621, 282121, 282621, 283121,
+    402805, 403305, 403805, 404305, 404805, 405305, 405805, 406305, 406805, 407305,
+    407805, 408305, 408805, 409305, 409805, 410305, 410805, 411305, 411805, 412305
+  ],
   "stimulus_end_clock_steps": [
-    5200, 5700, 6200, 6700, 7200, 7700, 8200, 8700, 9200, 9700,
-    10200, 10700, 11200, 11700, 12200, 12700, 13200, 13700, 14200, 14700],
+    273821, 274321, 274821, 275321, 275821, 276321, 276821, 277321, 277821, 278321,
+    278821, 279321, 279821, 280321, 280821, 281321, 281821, 282321, 282821, 283321,
+    403005, 403505, 404005, 404505, 405005, 405505, 406005, 406505, 407005, 407505,
+    408005, 408505, 409005, 409505, 410005, 410505, 411005, 411505, 412005, 412505
+  ],
 
   "e_spike_recording_file": "recordings/spikes_e.txt",
   "i_spike_recording_file": "recordings/spikes_i.txt",
   "voltage_recording_file": "recordings/voltages_step0.txt",
-  "voltage_recording_neuron_ids": [],
+  "voltage_recording_neuron_ids": [20, 1029, 1070, 1071],
   "e_e_weight_recording_file": "recordings/weights_e_to_e.txt"
 }
